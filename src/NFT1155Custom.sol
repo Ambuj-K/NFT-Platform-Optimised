@@ -2,7 +2,7 @@
 
 /// @author @ambuj-k 
 
-/// @title This is a 
+/// @title This is a varied range ERC1155 NFT token contract
 
 pragma solidity ^0.8.18;
 
@@ -10,8 +10,6 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract NFT1155Custom is ERC1155, Pausable {
-
-  error Error_Token_Address_Used();
 
   // The total number of NFTs that have been minted.
   uint256 public totalSupply;
