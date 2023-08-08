@@ -8,8 +8,12 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "../utils/ERC712Custom.sol";
 
-contract NFT1155Custom is ERC1155, Pausable {
+contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
+
+  address public owner;
+  address private inter
 
   // The total number of NFTs that have been minted.
   uint256 public totalSupply;
@@ -31,6 +35,52 @@ contract NFT1155Custom is ERC1155, Pausable {
     string name;
     string description;
     uint256 rarity;
+  }
+
+  bytes32 private constant _TRANSFER_OWNERSHIP_TYPEHASH =
+        keccak256("TransferOwnership(address _new_owner,address _owner,uint256 nonce,uint256 deadline)");
+
+  modifier onlyAuthorizedTransferOwnership(address target,uint256 deadline,bytes32 _typehash,bytes memory signature){
+
+        processSignatureVerification(abi.encode(_typehash,target,_owner,nonces[_owner],deadline), signature, deadline, _owner);
+     _; }
+
+  bytes32 private constant _PENDING_OWNER_TYPEHASH = keccak256("ClaimOwnerRole(uint256 nonce,uint256 deadline)");
+
+  modifier onlyAuthorizedPendingOwner(uint256 deadline,bytes32 _typehash,bytes memory signature){
+
+      processSignatureVerification(abi.encode(_typehash,_owner,nonces[_owner], deadline), signature, deadline, pendingOwner);
+  _; } 
+
+  function transferOwnership(address newOwner,uint256 deadline, bytes memory signature) public whenNotPaused onlyAuthorizedTransferOwnership(newOwner,deadline,_TRANSFER_OWNERSHIP_TYPEHASH,signature) {
+
+        if(newOwner == address(0)){revert Error_Invalid_NewOwner_Address();}
+
+        _transferOwnership(newOwner); }
+
+  /**
+     * @dev Transfers ownership of the contract to the pending owner (`pendingOwner`).
+     * Can only be called by the pending owner.
+  */
+
+  function claimOwnerRole(uint256 deadline, bytes memory signature) public whenNotPaused onlyAuthorizedPendingOwner(deadline,_PENDING_OWNER_TYPEHASH,signature) {
+
+      emit OwnershipTransferCompleted(_owner, pendingOwner);
+
+      _owner = pendingOwner;
+
+      pendingOwner = address(0);
+    }
+
+  /**
+     * @dev Makes (`newOwner`) the pendingOwner.
+     * Internal function without access restriction.
+  */
+  function _transferOwnership(address newOwner) internal {
+
+      pendingOwner = newOwner;
+
+      emit OwnershipTransferInitiated(_owner, newOwner); 
   }
 
   constructor() {
@@ -89,4 +139,5 @@ contract NFT1155Custom is ERC1155, Pausable {
   function rarity(uint256 tokenId) public view returns (uint256) {
     return LimitedReleaseNFT(tokenId, tokenTypes[tokenId], 0).rarity;
   }
+  
 }
