@@ -12,7 +12,7 @@ import "../utils/ERC712Custom.sol";
 
 contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
 
-  address public owner;
+  address public _owner;
   address private inter
 
   // The total number of NFTs that have been minted.
@@ -37,11 +37,14 @@ contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
     uint256 rarity;
   }
 
-  constructor(address _owner) {
-    owner = _owner;
+  constructor(address __owner) {
+    _owner = _owner;
     // Initialize the total supply to 0.
     totalSupply = 0;
   }
+
+  event OwnershipTransferCompleted(address owner, address pendingOwner);
+  event OwnershipTransferInitiated(address owner, address pendingOwner);
 
   bytes32 private constant _TRANSFER_OWNERSHIP_TYPEHASH =
         keccak256("TransferOwnership(address _new_owner,address _owner,uint256 nonce,uint256 deadline)");
@@ -58,7 +61,7 @@ contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
       processSignatureVerification(abi.encode(_typehash,_owner,nonces[_owner], deadline), signature, deadline, pendingOwner);
   _; } 
 
-  function transferOwnership(address newOwner,uint256 deadline, bytes memory signature) public whenNotPaused onlyAuthorizedTransferOwnership(newOwner,deadline,_TRANSFER_OWNERSHIP_TYPEHASH,signature) {
+  function transferOwnership(address newOwner,uint256 deadline, bytes memory signature) public onlyAuthorizedTransferOwnership(newOwner,deadline,_TRANSFER_OWNERSHIP_TYPEHASH,signature) {
 
         if(newOwner == address(0)){revert Error_Invalid_NewOwner_Address();}
 
@@ -69,7 +72,7 @@ contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
      * Can only be called by the pending owner.
   */
 
-  function claimOwnerRole(uint256 deadline, bytes memory signature) public whenNotPaused onlyAuthorizedPendingOwner(deadline,_PENDING_OWNER_TYPEHASH,signature) {
+  function claimOwnerRole(uint256 deadline, bytes memory signature) public onlyAuthorizedPendingOwner(deadline,_PENDING_OWNER_TYPEHASH,signature) {
 
       emit OwnershipTransferCompleted(_owner, pendingOwner);
 
