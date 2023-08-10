@@ -10,10 +10,10 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "../utils/ERC712Custom.sol";
 
-contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
+contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
 
   address public _owner;
-  address private inter
+  address private newOwner;
 
   // The total number of NFTs that have been minted.
   uint256 public totalSupply;
@@ -93,7 +93,7 @@ contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
   }
 
   // Mint a new limited release NFT.
-  function mint(uint256 tokenId, address owner, string memory uri, uint256 type, string memory name, string memory description, uint256 rarity) public {
+  function mint(uint256 tokenId, address owner, string memory uri, uint256 type, string memory name, string memory description, uint256 rarity) public external {
     // Check that the token ID is not already in use.
     if (tokenOwners[tokenId] != address(0)){
       revert Error_Token_Address_Used();
