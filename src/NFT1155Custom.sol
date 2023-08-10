@@ -37,6 +37,12 @@ contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
     uint256 rarity;
   }
 
+  constructor(address _owner) {
+    owner = _owner;
+    // Initialize the total supply to 0.
+    totalSupply = 0;
+  }
+
   bytes32 private constant _TRANSFER_OWNERSHIP_TYPEHASH =
         keccak256("TransferOwnership(address _new_owner,address _owner,uint256 nonce,uint256 deadline)");
 
@@ -81,11 +87,6 @@ contract NFT1155Custom is ERC1155, ERC712Custom, Pausable {
       pendingOwner = newOwner;
 
       emit OwnershipTransferInitiated(_owner, newOwner); 
-  }
-
-  constructor() {
-    // Initialize the total supply to 0.
-    totalSupply = 0;
   }
 
   // Mint a new limited release NFT.
