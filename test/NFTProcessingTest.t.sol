@@ -1,19 +1,25 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+
+//@author @ambuj-k
+
+pragma solidity ^0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/Counter.sol";
+import "../src/NFT1155Custom.sol";
+import "../src/NFTProcessing.sol";
 
 contract NFTProcessingTest is Test {
-    Counter public counter;
+    NFT1155Custom tokenObj;
+    NFTProcessing minterObj;
 
     function setUp() public {
-        counter = new Counter();
-        counter.setNumber(0);
+        tokenObj = new NFT1155Custom("LimRel", 2, 45 days);
+        tokenObj.setOWner(address(0));
+        minterObj = new NFTProcessing("Minter");
+        minterObj.setOWner(address(0));
     }
 
     function testMint() public {
-        counter.increment();
-        assertEq(counter.number(), 1);
+        minterObj.mint();
     }
 }
