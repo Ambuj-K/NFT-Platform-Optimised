@@ -93,7 +93,7 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
   }
 
   // Mint a new limited release NFT.
-  function mint(uint256 tokenId, address owner, string memory uri, uint256 type, string memory name, string memory description, uint256 rarity) public external {
+  function mint(uint256 tokenId, address owner, string memory uri, uint256 type_nft, string memory name, string memory description, uint256 rarity) public external {
     // Check that the token ID is not already in use.
     if (tokenOwners[tokenId] != address(0)){
       revert Error_Token_Address_Used();
@@ -103,7 +103,7 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
     LimitedReleaseNFT memory nft = LimitedReleaseNFT(tokenId, type, block.timestamp, name, description, rarity);
     tokenOwners[tokenId] = owner;
     tokenURIs[tokenId] = uri;
-    tokenTypes[tokenId] = type;
+    tokenTypes[tokenId] = type_nft;
 
     // Increment the total supply.
     totalSupply++;
