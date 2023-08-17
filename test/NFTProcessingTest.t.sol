@@ -13,6 +13,8 @@ contract NFTProcessingTest is Test {
     NFTProcessing minterObj;
 
     function setUp() public {
+        alice = makeAddr("Alice");
+        bob = makeAddr("Bob");
         tokenObj = new NFT1155Custom("LimRel", 2, 45 days);
         tokenObj.setOWner(address(0));
         minterObj = new NFTProcessing("Minter");
