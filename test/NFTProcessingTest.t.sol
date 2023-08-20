@@ -29,4 +29,35 @@ contract NFTProcessingTest is Test {
     function testMint() public {
         minterObj.mint();
     }
+
+        function testWithdraw(
+        uint256 depositAmount,
+        uint256 withdrawAmount
+    ) public {
+        depositAmount = bound(depositAmount, 0, usd.balanceOf(alice));
+        withdrawAmount = bound(withdrawAmount, 0, depositAmount);
+
+        vm.startPrank(alice);
+        usd.approve(address(account), depositAmount);
+        account.deposit(address(usd), depositAmount);
+        vm.stopPrank();
+
+        uint256 aliceBalanceBefore = usd.balanceOf(alice);
+
+        vm.startPrank(alice);
+        account.withdraw(address(usd), withdrawAmount);
+        vm.stopPrank();
+
+        uint256 aliceBalanceAfter = usd.balanceOf(alice);
+
+        assertEq(
+            account.balances(address(usd)),
+            depositAmount - withdrawAmount
+        );
+        assertEq(
+            usd.balanceOf(address(account)),
+            depositAmount - withdrawAmount
+        );
+        assertEq(aliceBalanceAfter - aliceBalanceBefore, withdrawAmount);
+    }
 }
