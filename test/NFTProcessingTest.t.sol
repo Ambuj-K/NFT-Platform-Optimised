@@ -45,4 +45,21 @@ contract NFTProcessingTest is Test {
         uint256 aliceBalanceBefore = usd.balanceOf(alice);
 
     }
+
+    function testDeposit(uint256 amount) public {
+        amount = bound(amount, 0, usd.balanceOf(alice));
+
+        uint256 aliceBalanceBefore = usd.balanceOf(alice);
+
+        vm.startPrank(alice);
+        usd.approve(address(account), amount);
+        account.deposit(address(usd), amount);
+        vm.stopPrank();
+
+        uint256 aliceBalanceAfter = usd.balanceOf(alice);
+
+        assertEq(account.balances(address(usd)), amount);
+        assertEq(usd.balanceOf(address(account)), amount);
+        assertEq(aliceBalanceBefore - aliceBalanceAfter, amount);
+    }
 }
