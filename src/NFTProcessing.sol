@@ -11,6 +11,24 @@ import "../INFT1155Custom.sol";
 
 contract NFTProcessing is ERC712Custom {
 
+// error list
+error Error_Only_NFT_Owner();
+error Error_Ahead_Of_Reveal_Time();
+error Error_Ahead_Of_Reveal_Time();
+error Error_Only_Owner();
+error Error_Unique_NFT_Mint();
+error Error_Price_Mismatch();
+
+function mintNFT() public payable {
+        if(msg.value != price){ revert Error_Price_Mismatch(); };
+        if(totalSupply() > 1){ revert Error_Unique_NFT_Mint(); };
+
+        uint256 tokenId = totalSupply() + 1;
+        _mint(msg.sender, tokenId);
+        _setTokenURI(tokenId, "");
+}
+
+
 function revealNFT(uint256 tokenId) public {
         if (!_isApprovedOrOwner(msg.sender, tokenId)){
             revert Error_Only_NFT_Owner();
