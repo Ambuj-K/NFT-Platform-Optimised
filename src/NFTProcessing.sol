@@ -19,6 +19,17 @@ error Error_Only_Owner();
 error Error_Unique_NFT_Mint();
 error Error_Price_Mismatch();
 
+modifier onlyAdmin() {
+        if(msg.sender != admin) {revert Error_Only_Owner()};
+        _;
+}
+
+// TODO Constructor
+constructor (){
+
+}
+
+// mint NFT, for revelataion upon time
 function mintNFT() public payable {
         if(msg.value != price){ revert Error_Price_Mismatch(); };
         if(totalSupply() > 1){ revert Error_Unique_NFT_Mint(); };
@@ -28,7 +39,7 @@ function mintNFT() public payable {
         _setTokenURI(tokenId, "");
 }
 
-
+// reveal function 
 function revealNFT(uint256 tokenId) public {
         if (!_isApprovedOrOwner(msg.sender, tokenId)){
             revert Error_Only_NFT_Owner();
@@ -41,14 +52,10 @@ function revealNFT(uint256 tokenId) public {
         _setTokenURI(tokenId, metadata);
     }
 
+// generate Metadata for NFT
 function generateMetadata(uint256 tokenId) internal view returns (string memory) {
         // Generate random metadata for the NFT.
         return "This is the metadata for NFT #" + tokenId.toString();
-    }
-
-modifier onlyAdmin() {
-        if(msg.sender != admin) {revert Error_Only_Owner()};
-        _;
     }
 
 }
