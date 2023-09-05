@@ -12,6 +12,12 @@ import "../utils/ERC712Custom.sol";
 
 contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
 
+  //errors
+  error Error_Edition_NonExistent();
+  error Error_Price_Greater_Than_Zero();
+  error Error_Split_Array_Not_Empty();
+  error Error_Royalty_Percent_Undefined();
+
   address public _owner;
   address private newOwner;
 
@@ -107,64 +113,64 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
 
     // Increment the total supply.
     totalSupply++;
+   }
+
+  struct Edition {
+      uint256 price;
+      uint256 openingTime;
+      string code;
+      string details;
+      address[] splits;
+      uint256 royalties;
+    }
+
+  mapping(uint256 => Edition) public editions;
+  uint256 public totalEditions;
+
+  constructor() ERC1155("https://new_id.com/api/token/{id}.json") {}
+
+  function createEdition(
+      uint256 _price,
+      uint256 _openingTime,
+      string memory _code,
+      string memory _details,
+      address[] memory _splits,
+      uint256 _royalties
+  ) external onlyOwner {
+      if(_price <= 0){revert Error_Price_Greater_Than_Zero();}
+      if(_splits.length <= 0){revert Error_Split_Array_Not_Empty();}
+      if(_royalties > 100){revert Error_Royalty_Percent_Undefined();}
+      uint256 editionId = totalEditions++;
+      editions[editionId] = Edition({
+          price: _price,
+          openingTime: _openingTime,
+          code: _code,
+          details: _details,
+          splits: _splits,
+          royalties: _royalties
+      });
   }
 
-    struct Edition {
-        uint256 price;
-        uint256 openingTime;
-        string code;
-        string details;
-        address[] splits;
-        uint256 royalties;
-    }
+  function updateEdition(
+      uint256 editionId,
+      uint256 _price,
+      uint256 _openingTime,
+      string memory _code,
+      string memory _details,
+      address[] memory _splits,
+      uint256 _royalties
+  ) external onlyOwner {
+      if(editionId > totalEditions){revert Error_Edition_NonExistent();}
+      if(_price <= 0){revert Error_Price_Greater_Than_Zero();}
+      if(_splits.length <= 0){revert Error_Split_Array_Not_Empty();}
+      if(_royalties > 100){revert Error_Royalty_Percent_Undefined();}
 
-    mapping(uint256 => Edition) public editions;
-    uint256 public totalEditions;
-
-    constructor() ERC1155("https://example.com/api/token/{id}.json") {}
-
-    function createEdition(
-        uint256 _price,
-        uint256 _openingTime,
-        string memory _code,
-        string memory _details,
-        address[] memory _splits,
-        uint256 _royalties
-    ) external onlyOwner {
-        require(_price > 0, "Price must be greater than zero");
-        require(_splits.length > 0, "Splits array must not be empty");
-        require(_royalties <= 100, "Royalties percentage must be between 0 and 100");
-        uint256 editionId = totalEditions++;
-        editions[editionId] = Edition({
-            price: _price,
-            openingTime: _openingTime,
-            code: _code,
-            details: _details,
-            splits: _splits,
-            royalties: _royalties
-        });
-    }
-
-    function updateEdition(
-        uint256 editionId,
-        uint256 _price,
-        uint256 _openingTime,
-        string memory _code,
-        string memory _details,
-        address[] memory _splits,
-        uint256 _royalties
-    ) external onlyOwner {
-        require(editionId < totalEditions, "Edition does not exist");
-        require(_price > 0, "Price must be greater than zero");
-        require(_splits.length > 0, "Splits array must not be empty");
-        require(_royalties <= 100, "Royalties percentage must be between 0 and 100");
-
-        editions[editionId].price = _price;
-        editions[editionId].openingTime = _openingTime;
-        editions[editionId].code = _code;
-        editions[editionId].details = _details;
-        editions[editionId].splits = _splits;
-        editions[editionId].royalties = _royalties;
-    }
+      editions[editionId].price = _price;
+      editions[editionId].openingTime = _openingTime;
+      editions[editionId].code = _code;
+      editions[editionId].details = _details;
+      editions[editionId].splits = _splits;
+      editions[editionId].royalties = _royalties;
+  }
   
 }
