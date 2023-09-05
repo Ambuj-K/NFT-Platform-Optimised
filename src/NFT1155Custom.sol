@@ -109,39 +109,62 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
     totalSupply++;
   }
 
-  // Get the owner of a given NFT.
-  function tokenOwner(uint256 tokenId) public view returns (address) {
-    return tokenOwners[tokenId];
-  }
+    struct Edition {
+        uint256 price;
+        uint256 openingTime;
+        string code;
+        string details;
+        address[] splits;
+        uint256 royalties;
+    }
 
-  // Get the URI of a given NFT.
-  function tokenURI(uint256 tokenId) public view returns (string) {
-    return tokenURIs[tokenId];
-  }
+    mapping(uint256 => Edition) public editions;
+    uint256 public totalEditions;
 
-  // Get the type of a given NFT.
-  function tokenType(uint256 tokenId) public view returns (uint256) {
-    return tokenTypes[tokenId];
-  }
+    constructor() ERC1155("https://example.com/api/token/{id}.json") {}
 
-  // Get the minted at timestamp of a given NFT.
-  function mintedAt(uint256 tokenId) public view returns (uint256) {
-    return LimitedReleaseNFT(tokenId, tokenTypes[tokenId], 0).mintedAt;
-  }
+    function createEdition(
+        uint256 _price,
+        uint256 _openingTime,
+        string memory _code,
+        string memory _details,
+        address[] memory _splits,
+        uint256 _royalties
+    ) external onlyOwner {
+        require(_price > 0, "Price must be greater than zero");
+        require(_splits.length > 0, "Splits array must not be empty");
+        require(_royalties <= 100, "Royalties percentage must be between 0 and 100");
+        uint256 editionId = totalEditions++;
+        editions[editionId] = Edition({
+            price: _price,
+            openingTime: _openingTime,
+            code: _code,
+            details: _details,
+            splits: _splits,
+            royalties: _royalties
+        });
+    }
 
-  // Get the name of a given NFT.
-  function name(uint256 tokenId) public view returns (string) {
-    return LimitedReleaseNFT(tokenId, tokenTypes[tokenId], 0).name;
-  }
+    function updateEdition(
+        uint256 editionId,
+        uint256 _price,
+        uint256 _openingTime,
+        string memory _code,
+        string memory _details,
+        address[] memory _splits,
+        uint256 _royalties
+    ) external onlyOwner {
+        require(editionId < totalEditions, "Edition does not exist");
+        require(_price > 0, "Price must be greater than zero");
+        require(_splits.length > 0, "Splits array must not be empty");
+        require(_royalties <= 100, "Royalties percentage must be between 0 and 100");
 
-  // Get the description of a given NFT.
-  function description(uint256 tokenId) public view returns (string) {
-    return LimitedReleaseNFT(tokenId, tokenTypes[tokenId], 0).description;
-  }
-
-  // Get the rarity of a given NFT.
-  function rarity(uint256 tokenId) public view returns (uint256) {
-    return LimitedReleaseNFT(tokenId, tokenTypes[tokenId], 0).rarity;
-  }
+        editions[editionId].price = _price;
+        editions[editionId].openingTime = _openingTime;
+        editions[editionId].code = _code;
+        editions[editionId].details = _details;
+        editions[editionId].splits = _splits;
+        editions[editionId].royalties = _royalties;
+    }
   
 }
