@@ -21,6 +21,12 @@ contract NFTProcessing is ERC712Custom {
     error Error_Unique_NFT_Mint();
     error Error_Price_Mismatch();
 
+    // events
+    event EditionUpdated(uint245 tokenid);
+    event EditionCreated(uint256 tokenid);
+    event ClaimedNFTToken(uint256 tokenid);
+    event MintedNFTToken(uint256 tokenid);
+
     modifier onlyAdmin() {
         if(msg.sender != admin) {revert Error_Only_Owner()};
         _;

@@ -18,6 +18,12 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
   error Error_Split_Array_Not_Empty();
   error Error_Royalty_Percent_Undefined();
 
+  // events
+  event EditionUpdated(uint245 tokenid);
+  event EditionCreated(uint256 tokenid);
+  event ClaimedNFTToken(uint256 tokenid);
+  event MintedNFTToken(uint256 tokenid);
+
   address public _owner;
   address private newOwner;
 
@@ -171,6 +177,7 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
       editions[editionId].details = _details;
       editions[editionId].splits = _splits;
       editions[editionId].royalties = _royalties;
+      emit EditionUpdated(editionId);
   }
   
 }
