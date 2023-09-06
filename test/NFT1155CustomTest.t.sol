@@ -32,8 +32,13 @@ contract NFTProcessingTest is Test {
         tokenObj.generateMetadata();
     }
 
-    function mintMax(){
+    function testMintMax(){
         tokenObj.mintedAt(tokenId);
+    }
+
+    function testEditionUpdate(){
+        cheats.prank(addr1);
+        tokenObj.updateEdition();
     }
 
 }

@@ -30,7 +30,7 @@ contract NFTProcessingTest is Test {
         minterObj.mint();
     }
 
-    function testWithdraw(
+    function testEditEdition(
         uint256 depositAmount,
         uint256 withdrawAmount
     ) public {
@@ -46,7 +46,7 @@ contract NFTProcessingTest is Test {
 
     }
 
-    function testDeposit(uint256 amount) public {
+    function testMintEdition(uint256 amount) public {
         amount = bound(amount, 0, usd.balanceOf(alice));
 
         uint256 aliceBalanceBefore = usd.balanceOf(alice);
