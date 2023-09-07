@@ -20,6 +20,8 @@ interface CheatCodes {
 contract NFTProcessingTest is Test {
     NFT1155Custom tokenObj;
     NFTProcessing minterObj;
+    address alice;
+    address bob;
 
     function setUp() public {
         alice = makeAddr("Alice");
@@ -70,5 +72,15 @@ contract NFTProcessingTest is Test {
         assertEq(account.balances(address(usd)), amount);
         assertEq(usd.balanceOf(address(account)), amount);
         assertEq(aliceBalanceBefore - aliceBalanceAfter, amount);
+    }
+
+    function testOwnerShipTransferRole() {
+        vm.startPrank(alice);
+        usd.transferOwnerShip(bob);
+        vm.startPrank(bob);
+        // try admin function, shoulddn't give an error
+        try
+        usd.totalSupply(50);
+        throw { "Ownership Error"; }
     }
 }
