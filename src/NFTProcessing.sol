@@ -37,6 +37,55 @@ contract NFTProcessing is ERC712Custom {
         owner = _owner;
     }
 
+    event OwnershipTransferCompleted(address owner, address pendingOwner);
+    event OwnershipTransferInitiated(address owner, address pendingOwner);
+
+    bytes32 private constant _TRANSFER_OWNERSHIP_TYPEHASH =
+            keccak256("TransferOwnership(address _new_owner,address _owner,uint256 nonce,uint256 deadline)");
+
+    modifier onlyAuthorizedTransferOwnership(address target,uint256 deadline,bytes32 _typehash,bytes memory signature){
+
+            processSignatureVerification(abi.encode(_typehash,target,_owner,nonces[_owner],deadline), signature, deadline, _owner);
+        _; }
+
+    bytes32 private constant _PENDING_OWNER_TYPEHASH = keccak256("ClaimOwnerRole(uint256 nonce,uint256 deadline)");
+
+    modifier onlyAuthorizedPendingOwner(uint256 deadline,bytes32 _typehash,bytes memory signature){
+
+        processSignatureVerification(abi.encode(_typehash,_owner,nonces[_owner], deadline), signature, deadline, pendingOwner);
+    _; } 
+
+    function transferOwnership(address newOwner,uint256 deadline, bytes memory signature) public onlyAuthorizedTransferOwnership(newOwner,deadline,_TRANSFER_OWNERSHIP_TYPEHASH,signature) {
+
+            if(newOwner == address(0)){revert Error_Invalid_NewOwner_Address();}
+
+            _transferOwnership(newOwner); }
+
+    /**
+        * @dev Transfers ownership of the contract to the pending owner (`pendingOwner`).
+        * Can only be called by the pending owner.
+    */
+
+    function claimOwnerRole(uint256 deadline, bytes memory signature) public onlyAuthorizedPendingOwner(deadline,_PENDING_OWNER_TYPEHASH,signature) {
+
+        emit OwnershipTransferCompleted(_owner, pendingOwner);
+
+        _owner = pendingOwner;
+
+        pendingOwner = address(0);
+        }
+
+    /**
+        * @dev Makes (`newOwner`) the pendingOwner.
+        * Internal function without access restriction.
+    */
+    function _transferOwnership(address newOwner) internal {
+
+        pendingOwner = newOwner;
+
+        emit OwnershipTransferInitiated(_owner, newOwner); 
+    }
+
     // mint NFT, for revelataion upon time
     function mintNFT() public payable {
         if(msg.value != price){ revert Error_Price_Mismatch(); };
