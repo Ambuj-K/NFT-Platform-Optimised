@@ -8,8 +8,9 @@ pragma solidity ^0.8.18;
 
 import "../ERC712Custom.sol";
 import "../INFT1155Custom.sol";
+import "../INFTProcessing.sol"
 
-contract NFTProcessing is ERC712Custom {
+contract NFTProcessing is INFTProcessing, ERC712Custom {
 
     address public owner;
 
