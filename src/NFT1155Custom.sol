@@ -155,6 +155,7 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
           splits: _splits,
           royalties: _royalties
       });
+      emit EditionCreated(editionId);
   }
 
   function updateEdition(
