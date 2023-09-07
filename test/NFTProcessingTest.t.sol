@@ -8,6 +8,15 @@ import "forge-std/Test.sol";
 import "../src/NFT1155Custom.sol";
 import "../src/NFTProcessing.sol";
 
+interface CheatCodes {
+    function startPrank(address) external;
+    function stopPrank() external;
+    function expectEmit(bool, bool, bool, bool) external;
+    function warp(uint256) external;
+    function roll(uint256) external;
+    function prank(address) external;
+}
+
 contract NFTProcessingTest is Test {
     NFT1155Custom tokenObj;
     NFTProcessing minterObj;

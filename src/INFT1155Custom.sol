@@ -12,4 +12,6 @@ function mint(uint256 tokenId, address owner, string memory uri, uint256 NFTType
 
 function transferOwnership(address newOwner,uint256 deadline, bytes memory signature) external;
 
+function editEdition(address editionId, string description, uint256 editions);
+
 }

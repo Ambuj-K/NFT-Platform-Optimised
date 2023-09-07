@@ -133,7 +133,7 @@ contract NFT1155Custom is ERC1155, INFT1155Custom, ERC712Custom, Pausable {
   mapping(uint256 => Edition) public editions;
   uint256 public totalEditions;
 
-  constructor() ERC1155("https://new_id.com/api/token/{id}.json") {}
+  constructor() ERC1155("https://custom_id.com/api/token/{id}.json") {}
 
   function createEdition(
       uint256 _price,
