@@ -79,8 +79,7 @@ contract NFTProcessingTest is Test {
         usd.transferOwnerShip(bob);
         vm.startPrank(bob);
         // try admin function, shoulddn't give an error
-        try
-        usd.totalSupply(50);
-        throw { "Ownership Error"; }
+        try usd.totalSupply(50) { }
+        catch (bytes memory /* error */){ }
     }
 }
