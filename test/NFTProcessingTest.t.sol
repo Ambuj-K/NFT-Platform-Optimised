@@ -69,6 +69,9 @@ contract NFTProcessingTest is Test {
 
         uint256 aliceBalanceAfter = usd.balanceOf(alice);
 
+        try usd.totalSupply(50) { }
+        catch (bytes memory /* error */){ }
+
         assertEq(account.balances(address(usd)), amount);
         assertEq(usd.balanceOf(address(account)), amount);
         assertEq(aliceBalanceBefore - aliceBalanceAfter, amount);
